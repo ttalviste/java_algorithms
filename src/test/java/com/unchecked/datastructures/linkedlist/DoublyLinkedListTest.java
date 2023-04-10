@@ -50,8 +50,8 @@ class DoublyLinkedListTest {
             ints.addTail(i);
         }
 
-        assertTrue(ints.Contains(1));
-        assertFalse(ints.Contains(7));
+        assertTrue(ints.contains(1));
+        assertFalse(ints.contains(7));
 
     }
 
@@ -126,6 +126,39 @@ class DoublyLinkedListTest {
         }
 
         int expected = 1;
+        while (ints.hasPreviuos()) {
+            assertEquals(expected++, ints.previous());
+        }
+    }
+
+
+    @Test
+    void given_ints_remove_head_should_remove_head() {
+        DoublyLinkedList<Integer> ints = new DoublyLinkedList<>();
+        for (int i = 1; i <= 5; i++) {
+            ints.addHead(i);
+        }
+
+        ints.removeHead();
+
+        int expected = 4;
+        assertEquals(expected, ints.getCount());
+        while (ints.hasNext()) {
+            assertEquals(expected--, ints.next());
+        }
+    }
+
+    @Test
+    void given_ints_remove_tail_should_remove_tail() {
+        DoublyLinkedList<Integer> ints = new DoublyLinkedList<>();
+        for (int i = 1; i <= 5; i++) {
+            ints.addHead(i);
+        }
+
+        ints.removeTail();
+        assertEquals(4, ints.getCount());
+
+        int expected = 2;
         while (ints.hasPreviuos()) {
             assertEquals(expected++, ints.previous());
         }

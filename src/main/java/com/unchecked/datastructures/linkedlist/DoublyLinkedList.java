@@ -7,31 +7,37 @@ import com.unchecked.datastructures.linkedlist.iterators.ReverseIterator;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class DoublyLinkedList<T extends Comparable<T>> implements Iterable<T>, Iterator<T>, ReverseIterable<T>, ReverseIterator<T> {
+public class DoublyLinkedList<T> implements Iterable<T>, Iterator<T>, ReverseIterable<T>, ReverseIterator<T> {
     private DoublyLinkedListNode<T> iteratorPointer;
     private DoublyLinkedListNode<T> reverseIteratorPointer;
     private DoublyLinkedListNode<T> head;
     private DoublyLinkedListNode<T> tail;
     private int count = 0;
 
-    public DoublyLinkedListNode<T> getHead() {
-        return head;
-    }
-
-    public DoublyLinkedListNode<T> getTail() {
-        return tail;
-    }
 
     public void addHead(T value) {
-        DoublyLinkedListNode<T> adding = new DoublyLinkedListNode<>(value, null, this.head);
+        DoublyLinkedListNode<T> node = new DoublyLinkedListNode<>(value, null, null);
+        DoublyLinkedListNode<T> temp = head;
 
-        if (Objects.nonNull(head)) {
-            head.setPrevious(adding);
-        }
-        head = adding;
-        if (Objects.isNull(tail)) {
+        // Point head to the new node
+        head = node;
+
+        // Insert the rest of the list behind the head
+        head.setNext(temp);
+
+        if (getCount() == 0) {
+            // if the list was empty then Head and Tail should
+            // both point to the new node.
             tail = head;
+        } else {
+            // Before: Head -------> 5 <-> 7 -> null
+            // After:  Head -> 3 <-> 5 <-> 7 -> null
+
+            // temp.Previous was null, now Head
+            temp.setPrevious(head);
+            ;
         }
+
         count++;
         resetIteratorPointers();
 
@@ -54,6 +60,47 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Iterable<T>, I
     @Override
     public void remove() {
         Iterator.super.remove();
+    }
+
+    public void removeHead() {
+        if (getCount() != 0) {
+            // Before: Head -> 3 <-> 5
+            // After:  Head -------> 5
+
+            // Head -> 3 -> null
+            // Head ------> null
+            head = head.getNext();
+
+            count--;
+
+            if (getCount() == 0) {
+                tail = null;
+            } else {
+                // 5.Previous was 3, now null
+                head.setPrevious(null);
+            }
+        }
+        resetIteratorPointers();
+    }
+
+    public void removeTail() {
+        if (getCount() != 0) {
+            if (getCount() == 1) {
+                head = null;
+                tail = null;
+            } else {
+                // Before: Head --> 3 --> 5 --> 7
+                //         Tail = 7
+                // After:  Head --> 3 --> 5 --> null
+                //         Tail = 5
+                // Null out 5's Next pointer
+                tail.getPrevious().setNext(null);
+                tail = tail.getPrevious();
+            }
+
+            count--;
+        }
+        resetIteratorPointers();
     }
 
     public boolean remove(T value) {
@@ -94,7 +141,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Iterable<T>, I
     }
 
     private DoublyLinkedListNode<T> find(T value) {
-        DoublyLinkedListNode<T> current = getHead();
+        DoublyLinkedListNode<T> current = head;
 
         while (Objects.nonNull(current)) {
             if (current.getValue().equals(value)) {
@@ -105,7 +152,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Iterable<T>, I
         return null;
     }
 
-    public boolean Contains(T value) {
+    public boolean contains(T value) {
         return Objects.nonNull(find(value));
     }
 
@@ -149,5 +196,21 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Iterable<T>, I
     private void resetIteratorPointers() {
         iteratorPointer = this.head;
         reverseIteratorPointer = this.tail;
+    }
+
+    public T getHead() {
+        if (this.getCount() > 0) {
+            return head.getValue();
+        }
+
+        return null;
+    }
+
+    public T getTail() {
+        if (this.getCount() > 0) {
+
+            return this.tail.getValue();
+        }
+        return null;
     }
 }
